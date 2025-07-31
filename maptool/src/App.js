@@ -97,18 +97,56 @@ function App() {
   
   // Handle map clicks to add new coordinates
   const handleMapClick = ({ lat, lng }) => {
-    // Format the new coordinate with 6 decimal places
-    const newCoord = `${lat.toFixed(6)}, ${lng.toFixed(6)} "" blue`;
-    
-    // Add the new coordinate to the text area
-    setInputText(prevText => {
-      // If there's already text, add a new line
-      if (prevText.trim()) {
-        return `${prevText}\n${newCoord}`;
-      }
-      // Otherwise, just add the coordinate
-      return newCoord;
-    });
+
+    // Identify the closest place name using OpenStreetMap Nominatim API
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
+      .then(response => response.json())
+      .then(data => {
+        // Extract place name from the response
+        let placeName = "";
+
+        if (data && data.address) {
+          if(data.address.city) {
+            placeName = data.address.city;
+          } else if (data.address.county) {
+            placeName = data.address.county;
+          }
+        }
+      
+        // Log the closest place name to the console
+        console.log("Closest place:", placeName);
+
+        // Format the new coordinate with 6 decimal places
+        const newCoord = `${lat.toFixed(6)}, ${lng.toFixed(6)} "${placeName}" blue`;
+
+        // Add the new coordinate to the text area
+        setInputText(prevText => {
+          // If there's already text, add a new line
+          if (prevText.trim()) {
+            return `${prevText}\n${newCoord}`;
+          }
+          // Otherwise, just add the coordinate
+          return newCoord;
+        });
+
+      })
+      .catch(error => {
+        console.error("Error fetching place name:", error);
+
+        // Format the new coordinate with 6 decimal places
+        const newCoord = `${lat.toFixed(6)}, ${lng.toFixed(6)} "" blue`;
+
+        // Add the new coordinate to the text area
+        setInputText(prevText => {
+          // If there's already text, add a new line
+          if (prevText.trim()) {
+            return `${prevText}\n${newCoord}`;
+          }
+          // Otherwise, just add the coordinate
+          return newCoord;
+        });
+
+      });
   };
   
   // Copy current URL to clipboard
