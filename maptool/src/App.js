@@ -425,7 +425,7 @@ function App() {
             <div className="control-divider"></div>
             <div className="measure-tool-toggle">
               <label>
-                <span>Measure Distances</span>
+                <span>Measure</span>
                 <div className="toggle-button">
                   <input
                     type="checkbox"
