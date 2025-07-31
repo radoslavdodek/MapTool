@@ -216,10 +216,23 @@ function MapEventHandler({ onMapChange, onMapClick }) {
         zoom 
       });
     },
+    zoom: () => {
+      // Called during zoom operation
+      // Enforce minimum zoom level of 3
+      const currentZoom = map.getZoom();
+      if (currentZoom < 3) {
+        map.setZoom(3);
+      }
+    },
     zoomend: () => {
       // Called when zoom animation is completed
       const center = map.getCenter();
-      const zoom = map.getZoom();
+      // Enforce minimum zoom level of 3
+      let zoom = map.getZoom();
+      if (zoom < 3) {
+        zoom = 3;
+        map.setZoom(3);
+      }
       onMapChange({ 
         center: [center.lat, center.lng], 
         zoom 
@@ -244,12 +257,15 @@ function MapUpdater({ center, zoom }) {
   const map = useMap();
   
   useEffect(() => {
+    // Enforce minimum zoom level of 3
+    const enforceMinZoom = (z) => Math.max(3, z);
+    
     if (center && zoom !== undefined && zoom !== null) {
-      map.setView(center, zoom);
+      map.setView(center, enforceMinZoom(zoom));
     } else if (center) {
-      map.setView(center, map.getZoom());
+      map.setView(center, enforceMinZoom(map.getZoom()));
     } else if (zoom !== undefined && zoom !== null) {
-      map.setZoom(zoom);
+      map.setZoom(enforceMinZoom(zoom));
     }
   }, [map, center, zoom]);
   
@@ -330,10 +346,11 @@ function MapComponent({ coordinates, mapType = 'openstreetmap', center, zoom, on
   };
   
   const getZoom = () => {
+    // Enforce minimum zoom level of 3
     if (zoom !== null && zoom !== undefined) {
-      return zoom;
+      return Math.max(3, zoom);
     }
-    return coordinates.length ? 10 : 2;
+    return coordinates.length ? 10 : 3;
   };
 
   return (
@@ -352,6 +369,7 @@ function MapComponent({ coordinates, mapType = 'openstreetmap', center, zoom, on
         <TileLayer
           attribution={mapTiles[mapType]?.attribution || mapTiles['openstreetmap'].attribution}
           url={mapTiles[mapType]?.url || mapTiles['openstreetmap'].url}
+          noWrap={true}
         />
         
         {/* Render measurement lines when enabled */}
