@@ -29,6 +29,20 @@ textarea {
   margin-top: 5px;
 }
 
+.center-controls-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+}
+
+.control-divider {
+  height: 24px;
+  width: 1px;
+  background-color: #ccc;
+}
+
 .coordinates-info {
   font-size: 14px;
   color: #666;

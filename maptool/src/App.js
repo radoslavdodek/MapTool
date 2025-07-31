@@ -369,6 +369,7 @@ function App() {
             <div className="zoom-level-display">
               <p>Zoom Level: {urlZoom || mapZoom || 'N/A'}</p>
             </div>
+            <div className="control-divider"></div>
             <div className="map-type-selector">
               <label htmlFor="map-type">Map Type: </label>
               <select 
@@ -388,6 +389,7 @@ function App() {
                 <option value="cartodb-darkmatter">CartoDB Dark Matter</option>
               </select>
             </div>
+            <div className="control-divider"></div>
             <div className="measure-tool-toggle">
               <label>
                 <span>Measure Distances</span>
