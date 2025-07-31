@@ -365,45 +365,47 @@ function App() {
               </div>
             )}
           </div>
-          <div className="zoom-level-display">
-            <p>Zoom Level: {urlZoom || mapZoom || 'N/A'}</p>
-          </div>
-          <div className="map-type-selector">
-            <label htmlFor="map-type">Map Type: </label>
-            <select 
-              id="map-type" 
-              value={mapType} 
-              onChange={(e) => setMapType(e.target.value)}
-            >
-              <option value="openstreetmap">OpenStreetMap</option>
-              <option value="openstreetmap-cycle">OpenStreetMap Cycle</option>
-              <option value="opentopomap">OpenTopoMap</option>
-              <option value="esri-streetmap">ESRI StreetMap</option>
-              <option value="esri-satellite">ESRI Satellite</option>
-              <option value="openstreetmap-hot">Humanitarian OSM</option>
-              <option value="openrailwaymap">OpenRailwayMap</option>
-              <option value="usgs-topo">USGS Topo</option>
-              <option value="cartodb-positron">CartoDB Positron</option>
-              <option value="cartodb-darkmatter">CartoDB Dark Matter</option>
-            </select>
-          </div>
-          <div className="measure-tool-toggle">
-            <label>
-              <span>Measure Distances</span>
-              <div className="toggle-button">
-                <input
-                  type="checkbox"
-                  checked={measureEnabled}
-                  onChange={(e) => setMeasureEnabled(e.target.checked)}
-                  disabled={coordinates.length < 2}
-                />
-                <span className="toggle-slider"></span>
-              </div>
-            </label>
+          <div className="center-controls-group">
+            <div className="zoom-level-display">
+              <p>Zoom Level: {urlZoom || mapZoom || 'N/A'}</p>
+            </div>
+            <div className="map-type-selector">
+              <label htmlFor="map-type">Map Type: </label>
+              <select 
+                id="map-type" 
+                value={mapType} 
+                onChange={(e) => setMapType(e.target.value)}
+              >
+                <option value="openstreetmap">OpenStreetMap</option>
+                <option value="openstreetmap-cycle">OpenStreetMap Cycle</option>
+                <option value="opentopomap">OpenTopoMap</option>
+                <option value="esri-streetmap">ESRI StreetMap</option>
+                <option value="esri-satellite">ESRI Satellite</option>
+                <option value="openstreetmap-hot">Humanitarian OSM</option>
+                <option value="openrailwaymap">OpenRailwayMap</option>
+                <option value="usgs-topo">USGS Topo</option>
+                <option value="cartodb-positron">CartoDB Positron</option>
+                <option value="cartodb-darkmatter">CartoDB Dark Matter</option>
+              </select>
+            </div>
+            <div className="measure-tool-toggle">
+              <label>
+                <span>Measure Distances</span>
+                <div className="toggle-button">
+                  <input
+                    type="checkbox"
+                    checked={measureEnabled}
+                    onChange={(e) => setMeasureEnabled(e.target.checked)}
+                    disabled={coordinates.length < 2}
+                  />
+                  <span className="toggle-slider"></span>
+                </div>
+              </label>
+            </div>
           </div>
           <div className="copy-url-button">
             <button onClick={copyToClipboard}>
-              {copySuccess || 'Copy URL'}
+              🔗 {copySuccess || 'Get shareable link'}
             </button>
           </div>
         </div>
