@@ -117,3 +117,47 @@
 .leaflet-tooltip.distance-label::before {
   display: none;
 }
+/* Media queries for responsive design */
+@media screen and (max-width: 768px) {
+  .fullscreen-button {
+    top: 5px;
+    right: 5px;
+  }
+  
+  .custom-marker-label {
+    font-size: 9px;
+    padding: 1px 6px;
+    max-width: 150px;
+  }
+  
+  .leaflet-tooltip.distance-label {
+    font-size: 9px;
+    padding: 1px 4px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .fullscreen-button {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .custom-marker-label {
+    font-size: 8px;
+    padding: 1px 4px;
+    max-width: 120px;
+    top: -20px;
+  }
+  
+  .custom-marker-label::after {
+    bottom: -4px;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 4px solid rgba(255, 255, 255, 0.9);
+  }
+  
+  .leaflet-tooltip.distance-label {
+    font-size: 8px;
+    padding: 1px 3px;
+  }
+}

@@ -24,16 +24,19 @@ textarea {
 
 .controls-container {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   margin-top: 5px;
+  gap: 10px;
 }
 
 .center-controls-group {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 20px;
+  gap: 15px;
   flex: 1;
 }
 
@@ -287,4 +290,141 @@ input:disabled + .toggle-slider:before {
 .leaflet-container {
   height: 100%;
   width: 100%;
+}
+
+/* Media queries for responsive design */
+@media screen and (max-width: 768px) {
+  .controls-container {
+    justify-content: center;
+    margin-top: 3px;
+    gap: 8px;
+  }
+  
+  .coordinates-info, .copy-url-button {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  
+  .copy-url-button {
+    justify-content: center;
+  }
+  
+  .center-controls-group {
+    width: 100%;
+    justify-content: center;
+    margin: 4px 0;
+    gap: 12px;
+  }
+  
+  .control-divider {
+    display: none;
+  }
+  
+  .map-type-selector, .zoom-level-display, .measure-tool-toggle {
+    margin: 4px 0;
+  }
+  
+  .format-dialog-content {
+    width: 95%;
+    padding: 15px;
+  }
+  
+  .format-dialog-content pre {
+    font-size: 12px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .input-container {
+    padding: 3px;
+  }
+  
+  textarea {
+    padding: 6px;
+    font-size: 14px;
+  }
+  
+  .controls-container {
+    margin-top: 2px;
+    gap: 5px;
+  }
+  
+  .center-controls-group {
+    margin: 2px 0;
+    gap: 8px;
+  }
+  
+  .coordinates-info, .zoom-level-display, .map-type-selector, .measure-tool-toggle {
+    font-size: 12px;
+    margin: 2px 0;
+    line-height: 1.2;
+  }
+  
+  .zoom-level-display p {
+    margin: 0;
+    line-height: 1.2;
+  }
+  
+  .map-type-selector {
+    gap: 4px;
+  }
+  
+  .map-type-selector select {
+    max-width: 150px;
+    font-size: 12px;
+    padding: 2px 4px;
+    height: 26px; /* Slightly increased for better touch target */
+    min-height: 26px;
+  }
+  
+  .copy-url-button {
+    justify-content: center;
+  }
+  
+  .copy-url-button button {
+    font-size: 12px;
+    padding: 4px 8px;
+    height: 26px; /* Matched with select height for consistency */
+    min-height: 26px;
+  }
+  
+  .measure-tool-toggle label {
+    gap: 6px;
+  }
+  
+  .toggle-button {
+    width: 36px;
+    height: 18px;
+  }
+  
+  .toggle-slider:before {
+    height: 14px;
+    width: 14px;
+    left: 2px;
+    bottom: 2px;
+  }
+  
+  input:checked + .toggle-slider:before {
+    transform: translateX(18px);
+  }
+  
+  .format-dialog-content {
+    padding: 10px;
+  }
+  
+  .format-dialog-content h3 {
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+  
+  .format-dialog-content h4 {
+    font-size: 14px;
+    margin-bottom: 3px;
+  }
+  
+  .format-dialog-content pre {
+    font-size: 11px;
+    padding: 5px;
+  }
 }

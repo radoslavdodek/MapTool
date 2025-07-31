@@ -2,6 +2,36 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import MapComponent from './Map';
 
+// Custom hook for responsive design
+function useWindowSize() {
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+  
+  useEffect(() => {
+    // Handler to call on window resize
+    function handleResize() {
+      // Set window width/height to state
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    }
+    
+    // Add event listener
+    window.addEventListener("resize", handleResize);
+    
+    // Call handler right away so state gets updated with initial window size
+    handleResize();
+    
+    // Remove event listener on cleanup
+    return () => window.removeEventListener("resize", handleResize);
+  }, []); // Empty array ensures that effect is only run on mount and unmount
+  
+  return windowSize;
+}
+
 // Function to encode state to URL hash
 const encodeStateToHash = (state) => {
   try {
@@ -37,6 +67,9 @@ function App() {
   const [copySuccess, setCopySuccess] = useState('');
   const [measureEnabled, setMeasureEnabled] = useState(false);
   const [isLoadingPlace, setIsLoadingPlace] = useState(false);
+  
+  // Get window size for responsive design
+  const windowSize = useWindowSize();
   
   // Separate state variables for URL updates only
   const [urlCenter, setUrlCenter] = useState(null);
@@ -328,7 +361,7 @@ function App() {
               }
             }
           }}
-          rows={5}
+          rows={windowSize.width <= 480 ? 3 : windowSize.width <= 768 ? 4 : 5}
         />
         <div className="controls-container">
           <div className="coordinates-info">
@@ -353,7 +386,7 @@ function App() {
                     <li>Color (name or hex code)</li>
                   </ul>
                   <h4>Examples:</h4>
-                  <pre>
+                  <pre style={{ wordBreak: 'break-all', whiteSpace: 'pre-wrap' }}>
                     40.7128, -74.0060 "New York"<br/>
                     34.0522, -118.2437 "Los Angeles"<br/>
                     41.8781, -87.6298 "Chicago" red<br/>
@@ -367,11 +400,11 @@ function App() {
           </div>
           <div className="center-controls-group">
             <div className="zoom-level-display">
-              <p>Zoom Level: {urlZoom || mapZoom || 'N/A'}</p>
+              <p>Zoom: {urlZoom || mapZoom || 'N/A'}</p>
             </div>
             <div className="control-divider"></div>
             <div className="map-type-selector">
-              <label htmlFor="map-type">Map Type: </label>
+              <label htmlFor="map-type">Map: </label>
               <select 
                 id="map-type" 
                 value={mapType} 
