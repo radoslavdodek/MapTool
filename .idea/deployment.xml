@@ -5,7 +5,7 @@
       <paths name="Oracle Indek">
         <serverdata>
           <mappings>
-            <mapping deploy="/" local="$PROJECT_DIR$/latlon-tool/build" web="/" />
+            <mapping deploy="/" local="$PROJECT_DIR$/maptool/build" web="/" />
           </mappings>
         </serverdata>
       </paths>
