@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -20,14 +20,14 @@ const createCustomMarkerIcon = (label, color) => {
   }
   
   // Create a custom icon with HTML content for the label and optional color
-  const markerStyle = color ? `filter: hue-rotate(${getHueRotation(color)}deg) saturate(${getSaturation(color)}) brightness(${getBrightness(color)});` : '';
+  const markerStyle = color ? `filter: hue-rotate(${getHueRotation(color)}deg) saturate(${getSaturation()}) brightness(${getBrightness(color)});` : '';
   
   return L.divIcon({
     className: 'custom-div-icon',
     html: `
       <div>
         <img src="${require('leaflet/dist/images/marker-icon.png')}" alt="marker" style="${markerStyle}" />
-        <div class="custom-marker-label" style="${color ? `border-color: ${color};` : ''}">${label || ''}</div>
+        ${label ? `<div class="custom-marker-label" style="${color ? `border-color: ${color};` : ''}">${label}</div>` : ''}
       </div>
     `,
     iconSize: [25, 41],
@@ -89,7 +89,7 @@ const getHueRotation = (color) => {
   return 0; // Default to no rotation
 };
 
-const getSaturation = (color) => {
+const getSaturation = () => {
   // For simplicity, we'll use a fixed saturation value
   return 1.5;
 };
