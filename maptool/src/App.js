@@ -98,7 +98,7 @@ function App() {
   // Handle map clicks to add new coordinates
   const handleMapClick = ({ lat, lng }) => {
     // Format the new coordinate with 6 decimal places
-    const newCoord = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+    const newCoord = `${lat.toFixed(6)}, ${lng.toFixed(6)} "" blue`;
     
     // Add the new coordinate to the text area
     setInputText(prevText => {
