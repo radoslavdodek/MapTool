@@ -272,6 +272,20 @@ function MapUpdater({ center, zoom }) {
   return null; // This component doesn't render anything
 }
 
+// Animated arrow component that points to the fullscreen button
+const FullscreenArrow = ({ show }) => {
+  if (!show) return null;
+  
+  return (
+    <div className="fullscreen-arrow-container">
+      <div className="fullscreen-tooltip">
+        Click here to leave fullscreen and see the rest of the screen
+      </div>
+      <div className="fullscreen-arrow"></div>
+    </div>
+  );
+};
+
 // Fullscreen button component
 const FullscreenButton = ({ isFullscreen, onClick }) => {
   return (
@@ -298,11 +312,17 @@ const FullscreenButton = ({ isFullscreen, onClick }) => {
 function MapComponent({ coordinates, mapType = 'openstreetmap', center, zoom, onMapChange, onMapClick, measureEnabled = false, isFullscreenInitial = false, onFullscreenChange }) {
   // State for fullscreen mode
   const [isFullscreen, setIsFullscreen] = useState(isFullscreenInitial);
+  // State for showing the fullscreen arrow tooltip
+  const [showFullscreenArrow, setShowFullscreenArrow] = useState(false);
   
   // Toggle fullscreen mode
   const toggleFullscreen = () => {
     const newFullscreenState = !isFullscreen;
     setIsFullscreen(newFullscreenState);
+    // Hide the arrow tooltip when exiting fullscreen
+    if (!newFullscreenState) {
+      setShowFullscreenArrow(false);
+    }
     // Notify parent component about fullscreen state change
     if (onFullscreenChange) {
       onFullscreenChange(newFullscreenState);
@@ -314,6 +334,8 @@ function MapComponent({ coordinates, mapType = 'openstreetmap', center, zoom, on
     const handleEscKey = (event) => {
       if (event.key === 'Escape' && isFullscreen) {
         setIsFullscreen(false);
+        // Hide the arrow tooltip when exiting fullscreen
+        setShowFullscreenArrow(false);
         // Notify parent component about fullscreen state change
         if (onFullscreenChange) {
           onFullscreenChange(false);
@@ -333,12 +355,21 @@ function MapComponent({ coordinates, mapType = 'openstreetmap', center, zoom, on
     // If isFullscreenInitial is true, ensure the map is in fullscreen mode
     if (isFullscreenInitial) {
       setIsFullscreen(true);
+      // Show the arrow tooltip when initially in fullscreen mode
+      setShowFullscreenArrow(true);
       // Ensure the body doesn't scroll when in fullscreen mode
       document.body.style.overflow = 'hidden';
+      
+      // Hide the arrow tooltip after 10 seconds
+      const arrowTimeout = setTimeout(() => {
+        setShowFullscreenArrow(false);
+      }, 10000);
       
       return () => {
         // Restore scrolling when component unmounts or fullscreen is exited
         document.body.style.overflow = '';
+        // Clear the timeout when component unmounts
+        clearTimeout(arrowTimeout);
       };
     }
   }, [isFullscreenInitial]);
@@ -446,6 +477,9 @@ function MapComponent({ coordinates, mapType = 'openstreetmap', center, zoom, on
         isFullscreen={isFullscreen} 
         onClick={toggleFullscreen} 
       />
+      
+      {/* Add animated arrow pointing to fullscreen button */}
+      <FullscreenArrow show={showFullscreenArrow} />
     </div>
   );
 }

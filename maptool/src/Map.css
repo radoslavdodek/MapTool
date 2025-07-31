@@ -160,4 +160,114 @@
     font-size: 8px;
     padding: 1px 3px;
   }
-}
+  }
+
+  /* Fullscreen arrow and tooltip styles */
+  .fullscreen-arrow-container {
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+  }
+
+  .fullscreen-arrow {
+    width: 30px;
+    height: 20px;
+    position: relative;
+    margin-right: 10px;
+    animation: pointToButton 1.5s infinite;
+  }
+
+  .fullscreen-arrow::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 20px;
+    height: 3px;
+    background-color: #ff6b6b;
+    transform: translateY(-50%);
+  }
+
+  .fullscreen-arrow::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    border-top: 3px solid #ff6b6b;
+    border-right: 3px solid #ff6b6b;
+    transform: translateY(-50%) rotate(45deg);
+  }
+
+  .fullscreen-tooltip {
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #333;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    max-width: 250px;
+    animation: fadeInOut 10s forwards;
+  }
+
+  @keyframes pointToButton {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(5px);
+    }
+  }
+
+  @keyframes fadeInOut {
+    0% {
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    80% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  /* Media queries for responsive design */
+  @media screen and (max-width: 768px) {
+    .fullscreen-arrow-container {
+      right: 40px;
+    }
+  
+    .fullscreen-tooltip {
+      font-size: 12px;
+      padding: 6px 10px;
+      max-width: 200px;
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .fullscreen-arrow-container {
+      right: 35px;
+      top: 5px;
+    }
+  
+    .fullscreen-arrow {
+      width: 20px;
+      height: 15px;
+      margin-right: 5px;
+    }
+  
+    .fullscreen-tooltip {
+      font-size: 10px;
+      padding: 4px 8px;
+      max-width: 150px;
+    }
+  }
