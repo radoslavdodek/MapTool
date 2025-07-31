@@ -1,0 +1,17 @@
+// Example from the issue description
+41.849834 -87.880674 "Community Part in Westchester"
+
+// Additional test cases
+// Comma-separated with label
+41.881832, -87.623177 "Willis Tower, Chicago"
+
+// Space-separated without label
+40.748817 -73.985428
+
+// Comma-separated without label
+37.774929, -122.419416
+
+// Multiple coordinates with and without labels
+34.052235 -118.243683 "Los Angeles City Hall"
+40.712776 -74.005974
+51.507351, -0.127758 "Big Ben, London"

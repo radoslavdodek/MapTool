@@ -1,0 +1,57 @@
+.map-container {
+  height: 100%;
+  width: 100%;
+}
+
+/* Custom marker label styles */
+.custom-marker-label {
+  background-color: rgba(255, 255, 255, 0.5);
+  border: 1px solid #666;
+  border-radius: 3px;
+  color: #333;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 3px 8px;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  position: absolute;
+  z-index: 1000;
+  text-align: center;
+  
+  /* Position the label above the marker */
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  
+  /* Ensure minimum width for very short labels */
+  min-width: 20px;
+  
+  /* Limit maximum width and add ellipsis for very long labels */
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Ensure the label is always on top */
+.leaflet-marker-pane {
+  z-index: 600;
+}
+
+.leaflet-tooltip-pane {
+  z-index: 650;
+}
+
+/* Add a small arrow pointing to the marker */
+.custom-marker-label::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  margin-left: -5px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid rgba(255, 255, 255, 0.9);
+}
