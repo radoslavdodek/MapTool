@@ -25,11 +25,11 @@ const createCustomMarkerIcon = (label, color, index = 0) => {
     className: 'custom-div-icon',
     html: `
       <div>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -10 404 532" width="28" height="40" style="position: absolute; top: 0; left: 0; filter: drop-shadow(2px 3px 2px rgba(0,0,0,0.5));">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -10 404 532" width="28" height="40" style="position: absolute; top: 0; left: 0; filter: drop-shadow(2px 3px 2px rgba(0,0,0,0.2));">
           <defs>
             <linearGradient id="${gradientId}" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" style="stop-color:${hexColor}; stop-opacity:0.8" />
-              <stop offset="100%" style="stop-color:${hexColor}; stop-opacity:0.4" />
+              <stop offset="100%" style="stop-color:${hexColor}; stop-opacity:0.6" />
             </linearGradient>
           </defs>
           <path fill="url(#${gradientId})" stroke="black" stroke-width="8" d="M192 0C85.961 0 0 85.961 0 192c0 77.413 26.97 99.031 172.268 309.67 4.767 6.887 12.47 10.77 19.732 10.77 7.262 0 14.965-3.883 19.732-10.77C357.03 291.031 384 269.413 384 192 384 85.961 298.039 0 192 0zm0 272c-44.183 0-80-35.817-80-80s35.817-80 80-80 80 35.817 80 80-35.817 80-80 80z"/>
