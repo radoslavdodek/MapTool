@@ -295,13 +295,18 @@ const FullscreenButton = ({ isFullscreen, onClick }) => {
   );
 };
 
-function MapComponent({ coordinates, mapType = 'openstreetmap', center, zoom, onMapChange, onMapClick, measureEnabled = false }) {
+function MapComponent({ coordinates, mapType = 'openstreetmap', center, zoom, onMapChange, onMapClick, measureEnabled = false, isFullscreenInitial = false, onFullscreenChange }) {
   // State for fullscreen mode
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(isFullscreenInitial);
   
   // Toggle fullscreen mode
   const toggleFullscreen = () => {
-    setIsFullscreen(!isFullscreen);
+    const newFullscreenState = !isFullscreen;
+    setIsFullscreen(newFullscreenState);
+    // Notify parent component about fullscreen state change
+    if (onFullscreenChange) {
+      onFullscreenChange(newFullscreenState);
+    }
   };
   
   // Add escape key handler to exit fullscreen mode
@@ -309,6 +314,10 @@ function MapComponent({ coordinates, mapType = 'openstreetmap', center, zoom, on
     const handleEscKey = (event) => {
       if (event.key === 'Escape' && isFullscreen) {
         setIsFullscreen(false);
+        // Notify parent component about fullscreen state change
+        if (onFullscreenChange) {
+          onFullscreenChange(false);
+        }
       }
     };
     
@@ -317,7 +326,22 @@ function MapComponent({ coordinates, mapType = 'openstreetmap', center, zoom, on
     return () => {
       document.removeEventListener('keydown', handleEscKey);
     };
-  }, [isFullscreen]);
+  }, [isFullscreen, onFullscreenChange]);
+  
+  // Effect to handle initial fullscreen state
+  useEffect(() => {
+    // If isFullscreenInitial is true, ensure the map is in fullscreen mode
+    if (isFullscreenInitial) {
+      setIsFullscreen(true);
+      // Ensure the body doesn't scroll when in fullscreen mode
+      document.body.style.overflow = 'hidden';
+      
+      return () => {
+        // Restore scrolling when component unmounts or fullscreen is exited
+        document.body.style.overflow = '';
+      };
+    }
+  }, [isFullscreenInitial]);
   
   // Find center of the map based on coordinates or default to a position
   const getMapCenter = () => {

@@ -67,6 +67,7 @@ function App() {
   const [copySuccess, setCopySuccess] = useState('');
   const [measureEnabled, setMeasureEnabled] = useState(false);
   const [isLoadingPlace, setIsLoadingPlace] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   
   // Get window size for responsive design
   const windowSize = useWindowSize();
@@ -128,6 +129,11 @@ function App() {
     // Only update URL-specific state variables, not the map view state
     setUrlCenter(center);
     setUrlZoom(zoom);
+  };
+  
+  // Handle fullscreen state changes
+  const handleFullscreenChange = (fullscreenState) => {
+    setIsFullscreen(fullscreenState);
   };
   
   // Handle map clicks to add new coordinates
@@ -230,7 +236,8 @@ function App() {
         mapType,
         center: urlCenter || mapCenter, // Use urlCenter if available, otherwise fall back to mapCenter
         zoom: urlZoom || mapZoom, // Use urlZoom if available, otherwise fall back to mapZoom
-        measureEnabled
+        measureEnabled,
+        isFullscreen // Include fullscreen state in URL
       };
       
       const newHash = encodeStateToHash(state);
@@ -238,7 +245,7 @@ function App() {
         window.history.pushState(null, '', newHash);
       }
     }
-  }, [coordinates, mapType, urlCenter, urlZoom, mapCenter, mapZoom, measureEnabled]);
+  }, [coordinates, mapType, urlCenter, urlZoom, mapCenter, mapZoom, measureEnabled, isFullscreen]);
   
   // Parse URL on initial load
   useEffect(() => {
@@ -285,6 +292,11 @@ function App() {
         // Set measure tool state if specified in URL
         if (state.measureEnabled !== undefined) {
           setMeasureEnabled(state.measureEnabled);
+        }
+        
+        // Set fullscreen state if specified in URL
+        if (state.isFullscreen !== undefined) {
+          setIsFullscreen(state.isFullscreen);
         }
       } else {
         // No state in URL, set defaults for US
@@ -356,6 +368,11 @@ function App() {
                   // Set measure tool state if specified in URL
                   if (state.measureEnabled !== undefined) {
                     setMeasureEnabled(state.measureEnabled);
+                  }
+                  
+                  // Set fullscreen state if specified in URL
+                  if (state.isFullscreen !== undefined) {
+                    setIsFullscreen(state.isFullscreen);
                   }
                 }
               }
@@ -459,6 +476,8 @@ function App() {
           onMapChange={handleMapChange}
           onMapClick={handleMapClick}
           measureEnabled={measureEnabled}
+          isFullscreenInitial={isFullscreen}
+          onFullscreenChange={handleFullscreenChange}
         />
       </div>
     </div>
