@@ -34,6 +34,7 @@ function App() {
   const [mapZoom, setMapZoom] = useState(null);
   const [showFormatDialog, setShowFormatDialog] = useState(false);
   const [copySuccess, setCopySuccess] = useState('');
+  const [measureEnabled, setMeasureEnabled] = useState(false);
   
   // Separate state variables for URL updates only
   const [urlCenter, setUrlCenter] = useState(null);
@@ -94,6 +95,22 @@ function App() {
     setUrlZoom(zoom);
   };
   
+  // Handle map clicks to add new coordinates
+  const handleMapClick = ({ lat, lng }) => {
+    // Format the new coordinate with 6 decimal places
+    const newCoord = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+    
+    // Add the new coordinate to the text area
+    setInputText(prevText => {
+      // If there's already text, add a new line
+      if (prevText.trim()) {
+        return `${prevText}\n${newCoord}`;
+      }
+      // Otherwise, just add the coordinate
+      return newCoord;
+    });
+  };
+  
   // Copy current URL to clipboard
   const copyToClipboard = () => {
     const currentUrl = window.location.href;
@@ -119,7 +136,8 @@ function App() {
         coordinates,
         mapType,
         center: urlCenter || mapCenter, // Use urlCenter if available, otherwise fall back to mapCenter
-        zoom: urlZoom || mapZoom // Use urlZoom if available, otherwise fall back to mapZoom
+        zoom: urlZoom || mapZoom, // Use urlZoom if available, otherwise fall back to mapZoom
+        measureEnabled
       };
       
       const newHash = encodeStateToHash(state);
@@ -127,7 +145,7 @@ function App() {
         window.history.pushState(null, '', newHash);
       }
     }
-  }, [coordinates, mapType, urlCenter, urlZoom, mapCenter, mapZoom]);
+  }, [coordinates, mapType, urlCenter, urlZoom, mapCenter, mapZoom, measureEnabled]);
   
   // Parse URL on initial load
   useEffect(() => {
@@ -169,6 +187,11 @@ function App() {
         } else {
           // Default to zoom level 4 for continental US view if no zoom is specified
           setMapZoom(4);
+        }
+        
+        // Set measure tool state if specified in URL
+        if (state.measureEnabled !== undefined) {
+          setMeasureEnabled(state.measureEnabled);
         }
       } else {
         // No state in URL, set defaults for US
@@ -236,6 +259,11 @@ function App() {
                     setMapZoom(state.zoom);
                     setUrlZoom(state.zoom);
                   }
+                  
+                  // Set measure tool state if specified in URL
+                  if (state.measureEnabled !== undefined) {
+                    setMeasureEnabled(state.measureEnabled);
+                  }
                 }
               }
             }
@@ -294,6 +322,17 @@ function App() {
               <option value="esri-streetmap">ESRI StreetMap</option>
             </select>
           </div>
+          <div className="measure-tool-toggle">
+            <label>
+              <input
+                type="checkbox"
+                checked={measureEnabled}
+                onChange={(e) => setMeasureEnabled(e.target.checked)}
+                disabled={coordinates.length < 2}
+              />
+              Measure Distances
+            </label>
+          </div>
           <div className="copy-url-button">
             <button onClick={copyToClipboard}>
               {copySuccess || 'Copy URL'}
@@ -308,6 +347,8 @@ function App() {
           center={mapCenter}
           zoom={mapZoom}
           onMapChange={handleMapChange}
+          onMapClick={handleMapClick}
+          measureEnabled={measureEnabled}
         />
       </div>
     </div>

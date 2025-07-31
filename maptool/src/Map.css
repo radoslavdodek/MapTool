@@ -1,6 +1,49 @@
 .map-container {
   height: 100%;
   width: 100%;
+  position: relative;
+}
+
+/* Fullscreen mode styles */
+.map-container.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background-color: white;
+}
+
+/* Fullscreen button styles */
+.fullscreen-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+  cursor: pointer;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.fullscreen-button:hover {
+  background-color: #f4f4f4;
+}
+
+.fullscreen-button svg {
+  fill: #333;
+}
+
+/* Change cursor to crosshair for better point placement precision */
+.leaflet-container {
+  cursor: crosshair;
 }
 
 /* Custom marker label styles */
@@ -9,9 +52,9 @@
   border: 1px solid #666;
   border-radius: 3px;
   color: #333;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: bold;
-  padding: 3px 8px;
+  padding: 2px 8px;
   white-space: nowrap;
   pointer-events: none;
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
@@ -20,7 +63,7 @@
   text-align: center;
   
   /* Position the label above the marker */
-  top: -30px;
+  top: -24px;
   left: 50%;
   transform: translateX(-50%);
   
@@ -54,4 +97,23 @@
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
   border-top: 5px solid rgba(255, 255, 255, 0.9);
+}
+
+/* Styles for the measurement tool */
+.leaflet-tooltip.distance-label {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid #3388ff;
+  border-radius: 4px;
+  color: #333;
+  font-size: 10px;
+  font-weight: normal;
+  padding: 2px 6px;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  pointer-events: none;
+}
+
+/* Remove the arrow from the tooltip */
+.leaflet-tooltip.distance-label::before {
+  display: none;
 }
