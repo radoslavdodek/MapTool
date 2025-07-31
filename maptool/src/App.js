@@ -424,7 +424,7 @@ function App() {
             </div>
             <div className="control-divider"></div>
             <div className="measure-tool-toggle">
-              <label>
+              <label title="Measure distances between the points on the map">
                 <span>Measure</span>
                 <div className="toggle-button">
                   <input
