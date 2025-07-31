@@ -376,10 +376,15 @@ function App() {
               onChange={(e) => setMapType(e.target.value)}
             >
               <option value="openstreetmap">OpenStreetMap</option>
+              <option value="openstreetmap-cycle">OpenStreetMap Cycle</option>
               <option value="opentopomap">OpenTopoMap</option>
+              <option value="esri-streetmap">ESRI StreetMap</option>
+              <option value="esri-satellite">ESRI Satellite</option>
+              <option value="openstreetmap-hot">Humanitarian OSM</option>
+              <option value="openrailwaymap">OpenRailwayMap</option>
+              <option value="usgs-topo">USGS Topo</option>
               <option value="cartodb-positron">CartoDB Positron</option>
               <option value="cartodb-darkmatter">CartoDB Dark Matter</option>
-              <option value="esri-streetmap">ESRI StreetMap</option>
             </select>
           </div>
           <div className="measure-tool-toggle">

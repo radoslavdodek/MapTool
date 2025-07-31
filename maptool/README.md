@@ -54,11 +54,14 @@ A simple React application that allows users to visualize geographic coordinates
 5. Use the "Map Type" dropdown to select different map styles:
    - OpenStreetMap (default) - Standard street map
    - OpenTopoMap - Topographic map
-   - Stamen Terrain - Terrain map with hill shading and natural vegetation colors
-   - Stamen Watercolor - Artistic watercolor-style map
    - CartoDB Positron - Light, clean map style
    - CartoDB Dark Matter - Dark map style
    - ESRI StreetMap - Detailed street map from ESRI
+   - ESRI Satellite - Satellite imagery
+   - OpenStreetMap Cycle - Cycling-focused map highlighting bike routes and infrastructure
+   - Humanitarian OSM - Humanitarian OpenStreetMap Team style, useful for disaster response
+   - OpenRailwayMap - Railway infrastructure map showing tracks, stations, and signals
+   - USGS Topo - US Geological Survey topographic maps with detailed terrain information
 6. Click on any marker to see a popup with the exact coordinates, label, and color (if specified).
 7. The map will automatically center on the average position of all coordinates.
 8. **URL Sharing**: As you interact with the map (adding coordinates, changing map type, panning, zooming), the URL in your browser is automatically updated to include all this information. You can:
