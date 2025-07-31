@@ -4,10 +4,10 @@ A simple React application that allows users to visualize geographic coordinates
 
 ## Quick Start
 
-The application is located in the `latlon-tool` directory. To get started:
+The application is located in the `maptool` directory. To get started:
 
 ```bash
-cd latlon-tool
+cd maptool
 npm install
 npm start
 ```
@@ -19,7 +19,7 @@ Then open [http://localhost:3000](http://localhost:3000) in your browser.
 To build the application for production:
 
 ```bash
-cd latlon-tool
+cd maptool
 npm run build
 ```
 
@@ -27,9 +27,9 @@ This creates an optimized production build in the `build` folder that can be dep
 
 ### Deploying to a Subfolder
 
-If you want to deploy the application to a specific subfolder on your server (e.g., https://example.com/maptool/), you need to configure the `homepage` field in package.json. See the [Custom Server Subfolder Deployment](latlon-tool/README.md#custom-server-subfolder-deployment) section in the latlon-tool README for detailed instructions.
+If you want to deploy the application to a specific subfolder on your server (e.g., https://example.com/maptool/), you need to configure the `homepage` field in package.json. See the [Custom Server Subfolder Deployment](maptool/README.md#custom-server-subfolder-deployment) section in the maptool README for detailed instructions.
 
-For other deployment options (GitHub Pages, Netlify, Vercel, AWS), see the [Building and Deployment](latlon-tool/README.md#building-and-deployment) section in the latlon-tool README.
+For other deployment options (GitHub Pages, Netlify, Vercel, AWS), see the [Building and Deployment](maptool/README.md#building-and-deployment) section in the maptool README.
 
 ## Features
 
@@ -44,4 +44,4 @@ For other deployment options (GitHub Pages, Netlify, Vercel, AWS), see the [Buil
 - URL sharing functionality - all map state is encoded in the URL for easy sharing
 - Responsive design with the map taking up most of the screen space
 
-For more detailed information, please see the [README.md](latlon-tool/README.md) in the latlon-tool directory.
+For more detailed information, please see the [README.md](maptool/README.md) in the maptool directory.

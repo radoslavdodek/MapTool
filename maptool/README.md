@@ -21,7 +21,7 @@ A simple React application that allows users to visualize geographic coordinates
 1. Clone the repository:
    ```
    git clone https://github.com/yourusername/MapTool.git
-   cd MapTool/latlon-tool
+   cd MapTool/maptool
    ```
 
 2. Install dependencies:
@@ -189,7 +189,7 @@ If you want to deploy the application to a specific subfolder on your server (e.
 1. Set the `homepage` field in your `package.json` to the subfolder path:
    ```json
    {
-     "name": "latlon-tool",
+     "name": "maptool",
      "version": "0.1.0",
      "private": true,
      "homepage": "/maptool",

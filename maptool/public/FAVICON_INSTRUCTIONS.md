@@ -16,7 +16,7 @@ If you have ImageMagick installed:
 
 ```bash
 # Navigate to the public directory
-cd latlon-tool/public
+cd maptool/public
 
 # Convert SVG to ICO (creates multiple sizes)
 convert -background transparent pin-icon.svg -define icon:auto-resize=16,32,48,64 favicon.ico
@@ -35,7 +35,7 @@ convert -background transparent pin-icon.svg -define icon:auto-resize=16,32,48,6
 After replacing the favicon, rebuild the application to see the changes:
 
 ```bash
-cd latlon-tool
+cd maptool
 npm run build
 ```
 
