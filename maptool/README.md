@@ -51,7 +51,7 @@ A simple React application that allows users to visualize geographic coordinates
      - Using hex colors: `51.505, -0.09 #FF0000` or `51.505, -0.09 "London Eye" #0000FF`
      - Supported named colors include: red, green, blue, yellow, orange, purple, cyan, magenta, etc.
 4. The map will automatically update to show markers for all valid coordinates.
-5. Use the "Map Type" dropdown to select different map styles:
+5. Use the "Map Type" dropdown to select different map styles (attributions are shown directly on the map)
    - OpenStreetMap (default) - Standard street map
    - OpenTopoMap - Topographic map
    - CartoDB Positron - Light, clean map style
