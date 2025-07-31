@@ -307,7 +307,7 @@ function App() {
     <div className="App">
       <div className="input-container">
         <textarea
-          placeholder="Enter coordinates (one pair per line, format: latitude, longitude) or paste a URL with encoded map data"
+          placeholder="Enter coordinates (one pair per line, format: latitude, longitude) or click on the map to add a new coordinate"
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           onPaste={(e) => {
@@ -388,7 +388,7 @@ function App() {
                   <h4>Examples:</h4>
                   <pre style={{ wordBreak: 'break-all', whiteSpace: 'pre-wrap' }}>
                     40.7128, -74.0060 "New York"<br/>
-                    34.0522, -118.2437 "Los Angeles"<br/>
+                    34.0522, -118.243 "Los Angeles"<br/>
                     41.8781, -87.6298 "Chicago" red<br/>
                     29.7604, -95.3698 "Houston" #EB33FF<br/>
                     25.7617 -80.1918 "Miami" green<br/>
