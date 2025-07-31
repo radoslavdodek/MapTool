@@ -6,7 +6,8 @@ import MapComponent from './Map';
 const encodeStateToHash = (state) => {
   try {
     const stateString = JSON.stringify(state);
-    return `#${btoa(stateString)}`;
+    // Use encodeURIComponent to handle special characters before base64 encoding
+    return `#${btoa(encodeURIComponent(stateString))}`;
   } catch (error) {
     console.error('Error encoding state to hash:', error);
     return '';
@@ -18,7 +19,7 @@ const decodeHashToState = (hash) => {
   if (!hash || hash === '#') return null;
   
   try {
-    const stateString = atob(hash.substring(1));
+    const stateString = decodeURIComponent(atob(hash.substring(1)));
     return JSON.parse(stateString);
   } catch (error) {
     console.error('Error decoding hash to state:', error);
@@ -35,6 +36,7 @@ function App() {
   const [showFormatDialog, setShowFormatDialog] = useState(false);
   const [copySuccess, setCopySuccess] = useState('');
   const [measureEnabled, setMeasureEnabled] = useState(false);
+  const [isLoadingPlace, setIsLoadingPlace] = useState(false);
   
   // Separate state variables for URL updates only
   const [urlCenter, setUrlCenter] = useState(null);
@@ -97,6 +99,8 @@ function App() {
   
   // Handle map clicks to add new coordinates
   const handleMapClick = ({ lat, lng }) => {
+    // Set loading state to true when starting to fetch place name
+    setIsLoadingPlace(true);
 
     // Identify the closest place name using OpenStreetMap Nominatim API
     fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
@@ -122,13 +126,22 @@ function App() {
         // Add the new coordinate to the text area
         setInputText(prevText => {
           // If there's already text, add a new line
-          if (prevText.trim()) {
-            return `${prevText}\n${newCoord}`;
-          }
-          // Otherwise, just add the coordinate
-          return newCoord;
+          const updatedText = prevText.trim() ? `${prevText}\n${newCoord}` : newCoord;
+          
+          // Also directly update the coordinates state to ensure URL gets updated
+          const newCoordinates = [...coordinates, { 
+            lat: parseFloat(lat.toFixed(6)), 
+            lng: parseFloat(lng.toFixed(6)), 
+            label: placeName, 
+            color: "blue" 
+          }];
+          setCoordinates(newCoordinates);
+          
+          return updatedText;
         });
 
+        // Set loading state to false when place name is fetched
+        setIsLoadingPlace(false);
       })
       .catch(error => {
         console.error("Error fetching place name:", error);
@@ -139,13 +152,22 @@ function App() {
         // Add the new coordinate to the text area
         setInputText(prevText => {
           // If there's already text, add a new line
-          if (prevText.trim()) {
-            return `${prevText}\n${newCoord}`;
-          }
-          // Otherwise, just add the coordinate
-          return newCoord;
+          const updatedText = prevText.trim() ? `${prevText}\n${newCoord}` : newCoord;
+          
+          // Also directly update the coordinates state to ensure URL gets updated
+          const newCoordinates = [...coordinates, { 
+            lat: parseFloat(lat.toFixed(6)), 
+            lng: parseFloat(lng.toFixed(6)), 
+            label: "", 
+            color: "blue" 
+          }];
+          setCoordinates(newCoordinates);
+          
+          return updatedText;
         });
 
+        // Set loading state to false when there's an error
+        setIsLoadingPlace(false);
       });
   };
   
@@ -362,13 +384,16 @@ function App() {
           </div>
           <div className="measure-tool-toggle">
             <label>
-              <input
-                type="checkbox"
-                checked={measureEnabled}
-                onChange={(e) => setMeasureEnabled(e.target.checked)}
-                disabled={coordinates.length < 2}
-              />
-              Measure Distances
+              <span>Measure Distances</span>
+              <div className="toggle-button">
+                <input
+                  type="checkbox"
+                  checked={measureEnabled}
+                  onChange={(e) => setMeasureEnabled(e.target.checked)}
+                  disabled={coordinates.length < 2}
+                />
+                <span className="toggle-slider"></span>
+              </div>
             </label>
           </div>
           <div className="copy-url-button">
@@ -379,6 +404,11 @@ function App() {
         </div>
       </div>
       <div className="map-wrapper">
+        {isLoadingPlace && (
+          <div className="loading-indicator">
+            Loading the place name...
+          </div>
+        )}
         <MapComponent 
           coordinates={coordinates} 
           mapType={mapType} 
