@@ -33,6 +33,7 @@ function App() {
   const [mapCenter, setMapCenter] = useState(null);
   const [mapZoom, setMapZoom] = useState(null);
   const [showFormatDialog, setShowFormatDialog] = useState(false);
+  const [copySuccess, setCopySuccess] = useState('');
   
   // Separate state variables for URL updates only
   const [urlCenter, setUrlCenter] = useState(null);
@@ -93,6 +94,23 @@ function App() {
     setUrlZoom(zoom);
   };
   
+  // Copy current URL to clipboard
+  const copyToClipboard = () => {
+    const currentUrl = window.location.href;
+    navigator.clipboard.writeText(currentUrl)
+      .then(() => {
+        setCopySuccess('Copied!');
+        // Reset success message after 2 seconds
+        setTimeout(() => {
+          setCopySuccess('');
+        }, 2000);
+      })
+      .catch(err => {
+        console.error('Failed to copy URL: ', err);
+        setCopySuccess('Failed to copy');
+      });
+  };
+
   // Update URL when state changes
   useEffect(() => {
     // Only update URL if we have all necessary state
@@ -275,6 +293,11 @@ function App() {
               <option value="cartodb-darkmatter">CartoDB Dark Matter</option>
               <option value="esri-streetmap">ESRI StreetMap</option>
             </select>
+          </div>
+          <div className="copy-url-button">
+            <button onClick={copyToClipboard}>
+              {copySuccess || 'Copy URL'}
+            </button>
           </div>
         </div>
       </div>

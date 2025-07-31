@@ -148,6 +148,26 @@ textarea {
   font-size: 14px;
 }
 
+.copy-url-button {
+  display: flex;
+  align-items: center;
+}
+
+.copy-url-button button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.copy-url-button button:hover {
+  background-color: #0056b3;
+}
+
 .map-wrapper {
   flex: 1;
   position: relative;
