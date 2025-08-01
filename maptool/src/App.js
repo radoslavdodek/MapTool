@@ -489,9 +489,12 @@ function App() {
                   onClick={() => {
                     const newOrder = !isLatLngOrder;
                     setIsLatLngOrder(newOrder);
-                    // Re-parse the current textarea content with the new coordinate order
-                    const parsedCoords = parseCoordinates(inputText, newOrder);
-                    setCoordinates(parsedCoords);
+                    
+                    // Reverse the coordinates in the textarea
+                    if (inputText.trim()) {
+                      const reversedText = formatCoordinatesToText(coordinates, newOrder);
+                      setInputText(reversedText);
+                    }
                   }}
               >
                 {isLatLngOrder ? 'Lat ⟷ Lng' : 'Lng ⟷ Lat'}
