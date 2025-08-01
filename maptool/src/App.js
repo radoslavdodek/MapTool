@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './App.css';
 import MapComponent from './Map';
 
@@ -68,6 +68,7 @@ function App() {
   const [measureEnabled, setMeasureEnabled] = useState(false);
   const [isLoadingPlace, setIsLoadingPlace] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isLatLngOrder, setIsLatLngOrder] = useState(true); // true = lat,lng, false = lng,lat
   
   // Get window size for responsive design
   const windowSize = useWindowSize();
@@ -75,9 +76,32 @@ function App() {
   // Separate state variables for URL updates only
   const [urlCenter, setUrlCenter] = useState(null);
   const [urlZoom, setUrlZoom] = useState(null);
+  
+  // Ref to track current coordinate order for URL decoding
+  const isLatLngOrderRef = useRef(isLatLngOrder);
+
+  // Helper function to format coordinates to text according to coordinate order setting
+  const formatCoordinatesToText = useCallback((coords, coordinateOrder) => {
+    return coords
+      .map(coord => {
+        // Handle all coordinate formats: [lat, lng], {lat, lng, label}, and {lat, lng, label, color}
+        if (Array.isArray(coord)) {
+          // For array format, apply coordinate order
+          const first = coordinateOrder ? coord[0] : coord[1];
+          const second = coordinateOrder ? coord[1] : coord[0];
+          return `${first}, ${second}`;
+        } else {
+          // For object format, apply coordinate order
+          const first = coordinateOrder ? coord.lat : coord.lng;
+          const second = coordinateOrder ? coord.lng : coord.lat;
+          return `${first}, ${second}${coord.label ? ` "${coord.label}"` : ''}${coord.color ? ` ${coord.color}` : ''}`;
+        }
+      })
+      .join('\n');
+  }, []);
 
   // Parse coordinates from text area
-  const parseCoordinates = (text) => {
+  const parseCoordinates = useCallback((text, coordinateOrder) => {
     if (!text.trim()) return [];
     
     const lines = text.split('\n');
@@ -91,11 +115,15 @@ function App() {
       // Format 1: "lat, lng" or "lat,lng" with optional label in quotes and optional color
       const commaMatchWithLabelAndColor = trimmedLine.match(/^\s*(-?\d+\.?\d*)\s*,\s*(-?\d+\.?\d*)\s*(?:"([^"]*)")?\s*(?:(#[0-9A-Fa-f]{3,8}|[a-zA-Z]+))?$/);
       if (commaMatchWithLabelAndColor) {
-        const lat = parseFloat(commaMatchWithLabelAndColor[1]);
-        const lng = parseFloat(commaMatchWithLabelAndColor[2]);
+        const first = parseFloat(commaMatchWithLabelAndColor[1]);
+        const second = parseFloat(commaMatchWithLabelAndColor[2]);
         const label = commaMatchWithLabelAndColor[3] === '' ? null : commaMatchWithLabelAndColor[3] || null;
         const color = commaMatchWithLabelAndColor[4] || null;
-        if (!isNaN(lat) && !isNaN(lng)) {
+        
+        if (!isNaN(first) && !isNaN(second)) {
+          // Apply coordinate order: if lat-lng order, first=lat, second=lng; if lng-lat order, first=lng, second=lat
+          const lat = coordinateOrder ? first : second;
+          const lng = coordinateOrder ? second : first;
           parsedCoordinates.push({ lat, lng, label, color });
           continue;
         }
@@ -104,11 +132,15 @@ function App() {
       // Format 2: "lat lng" (space separated) with optional label in quotes and optional color
       const spaceMatchWithLabelAndColor = trimmedLine.match(/^\s*(-?\d+\.?\d*)\s+(-?\d+\.?\d*)\s*(?:"([^"]*)")?\s*(?:(#[0-9A-Fa-f]{3,8}|[a-zA-Z]+))?$/);
       if (spaceMatchWithLabelAndColor) {
-        const lat = parseFloat(spaceMatchWithLabelAndColor[1]);
-        const lng = parseFloat(spaceMatchWithLabelAndColor[2]);
+        const first = parseFloat(spaceMatchWithLabelAndColor[1]);
+        const second = parseFloat(spaceMatchWithLabelAndColor[2]);
         const label = spaceMatchWithLabelAndColor[3] === '' ? null : spaceMatchWithLabelAndColor[3] || null;
         const color = spaceMatchWithLabelAndColor[4] || null;
-        if (!isNaN(lat) && !isNaN(lng)) {
+        
+        if (!isNaN(first) && !isNaN(second)) {
+          // Apply coordinate order: if lat-lng order, first=lat, second=lng; if lng-lat order, first=lng, second=lat
+          const lat = coordinateOrder ? first : second;
+          const lng = coordinateOrder ? second : first;
           parsedCoordinates.push({ lat, lng, label, color });
           continue;
         }
@@ -116,13 +148,18 @@ function App() {
     }
     
     return parsedCoordinates;
-  };
+  }, []);
 
   // Update coordinates when input text changes
   useEffect(() => {
-    const parsedCoords = parseCoordinates(inputText);
+    const parsedCoords = parseCoordinates(inputText, isLatLngOrder);
     setCoordinates(parsedCoords);
-  }, [inputText]);
+  }, [inputText, isLatLngOrder, parseCoordinates]);
+  
+  // Update ref when coordinate order changes
+  useEffect(() => {
+    isLatLngOrderRef.current = isLatLngOrder;
+  }, [isLatLngOrder]);
   
   // Handle map changes and update URL only (not map state)
   const handleMapChange = ({ center, zoom }) => {
@@ -237,7 +274,8 @@ function App() {
         center: urlCenter || mapCenter, // Use urlCenter if available, otherwise fall back to mapCenter
         zoom: urlZoom || mapZoom, // Use urlZoom if available, otherwise fall back to mapZoom
         measureEnabled,
-        isFullscreen // Include fullscreen state in URL
+        isFullscreen, // Include fullscreen state in URL
+        isLatLngOrder // Include coordinate order in URL
       };
       
       const newHash = encodeStateToHash(state);
@@ -245,26 +283,25 @@ function App() {
         window.history.pushState(null, '', newHash);
       }
     }
-  }, [coordinates, mapType, urlCenter, urlZoom, mapCenter, mapZoom, measureEnabled, isFullscreen]);
+  }, [coordinates, mapType, urlCenter, urlZoom, mapCenter, mapZoom, measureEnabled, isFullscreen, isLatLngOrder]);
   
   // Parse URL on initial load
   useEffect(() => {
     const handleHashChange = () => {
       const state = decodeHashToState(window.location.hash);
       if (state) {
+        // Get the coordinate order from URL or use current setting
+        const coordinateOrder = state.isLatLngOrder !== undefined ? state.isLatLngOrder : isLatLngOrderRef.current;
+
         if (state.coordinates) {
-          // Convert coordinates to string for textarea
-          const coordsText = state.coordinates
-            .map(coord => {
-              // Handle all coordinate formats: [lat, lng], {lat, lng, label}, and {lat, lng, label, color}
-              if (Array.isArray(coord)) {
-                return `${coord[0]}, ${coord[1]}`;
-              } else {
-                return `${coord.lat}, ${coord.lng}${coord.label ? ` "${coord.label}"` : ''}${coord.color ? ` ${coord.color}` : ''}`;
-              }
-            })
-            .join('\n');
+          // Convert coordinates to string for textarea using the coordinate order from URL or current setting
+          const coordsText = formatCoordinatesToText(state.coordinates, coordinateOrder);
           setInputText(coordsText);
+        }
+
+        // Set coordinate order after setting input text to avoid triggering useEffect
+        if (state.isLatLngOrder !== undefined) {
+          setIsLatLngOrder(state.isLatLngOrder);
         }
 
         if (state.mapType) {
@@ -313,7 +350,7 @@ function App() {
     return () => {
       window.removeEventListener('hashchange', handleHashChange);
     };
-  }, []);
+  }, [formatCoordinatesToText]);
 
   return (
     <div className="App">
@@ -335,20 +372,19 @@ function App() {
                 const state = decodeHashToState(hash);
                 
                 if (state) {
+                  // Get the coordinate order from URL or use current setting
+                  const coordinateOrder = state.isLatLngOrder !== undefined ? state.isLatLngOrder : isLatLngOrderRef.current;
+
                   // Update state based on the decoded information
                   if (state.coordinates) {
-                    // Convert coordinates to string for textarea
-                    const coordsText = state.coordinates
-                      .map(coord => {
-                        // Handle all coordinate formats: [lat, lng], {lat, lng, label}, and {lat, lng, label, color}
-                        if (Array.isArray(coord)) {
-                          return `${coord[0]}, ${coord[1]}`;
-                        } else {
-                          return `${coord.lat}, ${coord.lng}${coord.label ? ` "${coord.label}"` : ''}${coord.color ? ` ${coord.color}` : ''}`;
-                        }
-                      })
-                      .join('\n');
+                    // Convert coordinates to string for textarea using the coordinate order from URL or current setting
+                    const coordsText = formatCoordinatesToText(state.coordinates, coordinateOrder);
                     setInputText(coordsText);
+                  }
+
+                  // Set coordinate order after setting input text to avoid triggering useEffect
+                  if (state.isLatLngOrder !== undefined) {
+                    setIsLatLngOrder(state.isLatLngOrder);
                   }
                   
                   if (state.mapType) {
@@ -396,13 +432,14 @@ function App() {
                   <h4>Mandatory:</h4>
                   <ul>
                     <li>Latitude and longitude (decimal format)</li>
+                    <li>Use the toggle button to switch between Lat,Lng and Lng,Lat order</li>
                   </ul>
                   <h4>Optional:</h4>
                   <ul>
                     <li>Label (in quotes)</li>
                     <li>Color (name or hex code)</li>
                   </ul>
-                  <h4>Examples:</h4>
+                  <h4>Examples (Lat,Lng order):</h4>
                   <pre style={{ wordBreak: 'break-all', whiteSpace: 'pre-wrap' }}>
                     40.7128, -74.0060 "New York"<br/>
                     34.0522, -118.243 "Los Angeles"<br/>
@@ -410,14 +447,33 @@ function App() {
                     29.7604, -95.3698 "Houston" #EB33FF<br/>
                     25.7617 -80.1918 "Miami" green<br/>
                   </pre>
+                  <h4>Examples (Lng,Lat order):</h4>
+                  <pre style={{ wordBreak: 'break-all', whiteSpace: 'pre-wrap' }}>
+                    -74.0060, 40.7128 "New York"<br/>
+                    -118.243, 34.0522 "Los Angeles"<br/>
+                    -87.6298, 41.8781 "Chicago" red<br/>
+                    -95.3698, 29.7604 "Houston" #EB33FF<br/>
+                    -80.1918, 25.7617 "Miami" green<br/>
+                  </pre>
                   <button onClick={() => setShowFormatDialog(false)}>Close</button>
                 </div>
               </div>
             )}
           </div>
           <div className="center-controls-group">
-            <div className="zoom-level-display">
-              <p>Zoom: {urlZoom || mapZoom || 'N/A'}</p>
+            <div className="coordinate-order-button">
+              <button
+                  title="Toggle between latitude-longitude and longitude-latitude order"
+                  onClick={() => {
+                    const newOrder = !isLatLngOrder;
+                    setIsLatLngOrder(newOrder);
+                    // Re-parse the current textarea content with the new coordinate order
+                    const parsedCoords = parseCoordinates(inputText, newOrder);
+                    setCoordinates(parsedCoords);
+                  }}
+              >
+                {isLatLngOrder ? 'Lat ⟷ Lng' : 'Lng ⟷ Lat'}
+              </button>
             </div>
             <div className="control-divider"></div>
             <div className="map-type-selector">
@@ -453,6 +509,10 @@ function App() {
                   <span className="toggle-slider"></span>
                 </div>
               </label>
+            </div>
+            <div className="control-divider"></div>
+            <div className="zoom-level-display">
+              <p>Zoom: {urlZoom || mapZoom || 'N/A'}</p>
             </div>
           </div>
           <div className="copy-url-button">

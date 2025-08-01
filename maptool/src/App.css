@@ -199,6 +199,26 @@ textarea {
   cursor: pointer;
 }
 
+.coordinate-order-button {
+  display: flex;
+  align-items: center;
+}
+
+.coordinate-order-button button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.coordinate-order-button button:hover {
+  background-color: #0056b3;
+}
+
 /* Toggle button styles */
 .toggle-button {
   position: relative;
@@ -321,7 +341,7 @@ input:disabled + .toggle-slider:before {
     display: none;
   }
   
-  .map-type-selector, .zoom-level-display, .measure-tool-toggle {
+  .map-type-selector, .zoom-level-display, .measure-tool-toggle, .coordinate-order-button {
     margin: 4px 0;
   }
   
@@ -355,7 +375,7 @@ input:disabled + .toggle-slider:before {
     gap: 8px;
   }
   
-  .coordinates-info, .zoom-level-display, .map-type-selector, .measure-tool-toggle {
+  .coordinates-info, .zoom-level-display, .map-type-selector, .measure-tool-toggle, .coordinate-order-button {
     font-size: 12px;
     margin: 2px 0;
     line-height: 1.2;
@@ -391,6 +411,11 @@ input:disabled + .toggle-slider:before {
   
   .measure-tool-toggle label {
     gap: 6px;
+  }
+  
+  .coordinate-order-button button {
+    padding: 4px 8px;
+    font-size: 12px;
   }
   
   .toggle-button {
