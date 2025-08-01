@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents, Polyline, Tooltip } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -107,40 +107,54 @@ const calculateDistance = (point1, point2) => {
 
 // Component to render measurement lines and distance labels
 const MeasurementLines = ({ coordinates }) => {
-  if (!coordinates || coordinates.length < 2) return null;
-  
-  // Create all possible pairs of points
-  const lines = [];
-  for (let i = 0; i < coordinates.length; i++) {
-    for (let j = i + 1; j < coordinates.length; j++) {
-      const point1 = coordinates[i];
-      const point2 = coordinates[j];
-      
-      // Extract positions
-      const pos1 = Array.isArray(point1) ? point1 : [point1.lat, point1.lng];
-      const pos2 = Array.isArray(point2) ? point2 : [point2.lat, point2.lng];
-      
-      // Calculate distance in both km and miles
-      const distance = calculateDistance(point1, point2);
-      
-      // Calculate midpoint for the label
-      const midpoint = [
-        (pos1[0] + pos2[0]) / 2,
-        (pos1[1] + pos2[1]) / 2
-      ];
-      
-      lines.push({
-        positions: [pos1, pos2],
-        distance,
-        midpoint
-      });
+  // Use useMemo to optimize the calculation and ensure it only recalculates when coordinates change
+  const lines = useMemo(() => {
+    if (!coordinates || coordinates.length < 2) return [];
+    
+    // Create all possible pairs of points
+    const calculatedLines = [];
+    for (let i = 0; i < coordinates.length; i++) {
+      for (let j = i + 1; j < coordinates.length; j++) {
+        const point1 = coordinates[i];
+        const point2 = coordinates[j];
+        
+        // Extract positions
+        const pos1 = Array.isArray(point1) ? point1 : [point1.lat, point1.lng];
+        const pos2 = Array.isArray(point2) ? point2 : [point2.lat, point2.lng];
+        
+        // Calculate distance in both km and miles
+        const distance = calculateDistance(point1, point2);
+        
+        // Calculate exact midpoint for the label
+        const midpoint = [
+          (pos1[0] + pos2[0]) / 2,
+          (pos1[1] + pos2[1]) / 2
+        ];
+        
+        // Create a position hash for the tooltip key
+        const positionHash = `${pos1[0].toFixed(6)}-${pos1[1].toFixed(6)}-${pos2[0].toFixed(6)}-${pos2[1].toFixed(6)}`;
+        
+        calculatedLines.push({
+          positions: [pos1, pos2],
+          distance,
+          midpoint,
+          // Create a unique key for each line based on the coordinate indices
+          key: `${i}-${j}`,
+          // Create a position hash for tooltip re-rendering
+          positionHash
+        });
+      }
     }
-  }
+    
+    return calculatedLines;
+  }, [coordinates]); // Only recalculate when coordinates change
+  
+  if (lines.length === 0) return null;
   
   return (
     <>
-      {lines.map((line, idx) => (
-        <React.Fragment key={idx}>
+      {lines.map((line) => (
+        <React.Fragment key={line.key}>
           <Polyline 
             positions={line.positions} 
             color="#3388ff" 
@@ -148,7 +162,12 @@ const MeasurementLines = ({ coordinates }) => {
             opacity={0.7} 
             dashArray="5,5"
           >
-            <Tooltip permanent direction="center" className="distance-label">
+            <Tooltip 
+              key={`tooltip-${line.key}-${line.positionHash}`}
+              permanent 
+              direction="center" 
+              className="distance-label"
+            >
               {line.distance.miles} miles ({line.distance.km} km)
             </Tooltip>
           </Polyline>
@@ -429,7 +448,10 @@ function MapComponent({ coordinates, mapType = 'openstreetmap', center, zoom, on
         
         {/* Render measurement lines when enabled */}
         {measureEnabled && coordinates.length >= 2 && (
-          <MeasurementLines coordinates={coordinates} />
+          <MeasurementLines 
+            key={`measure-${coordinates.length}-${measureEnabled}-${coordinates.map(c => `${c.lat?.toFixed(6)}-${c.lng?.toFixed(6)}`).join('-')}`} 
+            coordinates={coordinates} 
+          />
         )}
         
         {coordinates.map((coord, idx) => {

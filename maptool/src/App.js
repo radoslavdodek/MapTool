@@ -342,7 +342,7 @@ function App() {
       } else {
         // No state in URL, set defaults for US
         setMapCenter([39.8283, -98.5795]);
-        setMapZoom(4);
+        setMapZoom(5);
       }
     };
     
