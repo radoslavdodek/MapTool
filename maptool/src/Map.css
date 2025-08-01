@@ -318,3 +318,17 @@
       max-width: 150px;
     }
   }
+
+/* Popup delete button styles */
+.leaflet-popup-content button {
+  transition: all 0.2s ease;
+}
+
+.leaflet-popup-content button:hover {
+  background-color: #ff6666 !important;
+  transform: scale(1.05);
+}
+
+.leaflet-popup-content button:active {
+  transform: scale(0.95);
+}

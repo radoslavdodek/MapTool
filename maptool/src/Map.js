@@ -328,7 +328,7 @@ const FullscreenButton = ({ isFullscreen, onClick }) => {
   );
 };
 
-function MapComponent({ coordinates, mapType = 'openstreetmap', center, zoom, onMapChange, onMapClick, measureEnabled = false, isFullscreenInitial = false, onFullscreenChange, onMarkerDrag }) {
+function MapComponent({ coordinates, mapType = 'openstreetmap', center, zoom, onMapChange, onMapClick, measureEnabled = false, isFullscreenInitial = false, onFullscreenChange, onMarkerDrag, onMarkerDelete }) {
   // State for fullscreen mode
   const [isFullscreen, setIsFullscreen] = useState(isFullscreenInitial);
   // State for showing the fullscreen arrow tooltip
@@ -469,7 +469,7 @@ function MapComponent({ coordinates, mapType = 'openstreetmap', center, zoom, on
           
           return (
             <Marker 
-              key={idx} 
+              key={`marker-${idx}-${position[0]}-${position[1]}`} 
               position={position} 
               icon={icon}
               draggable={true}
@@ -511,6 +511,42 @@ function MapComponent({ coordinates, mapType = 'openstreetmap', center, zoom, on
                   <small style={{ color: '#666', display: 'block', marginTop: '8px' }}>
                     💡 Drag to move this point
                   </small>
+                  <br />
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent event bubbling
+                      // Close the popup first by clicking the close button
+                      const popup = e.target.closest('.leaflet-popup');
+                      if (popup) {
+                        const closeButton = popup.querySelector('.leaflet-popup-close-button');
+                        if (closeButton) {
+                          closeButton.click();
+                        } else {
+                          // Fallback: remove the popup manually
+                          popup.remove();
+                        }
+                      }
+                      // Add a small delay to ensure popup is closed before deleting
+                      setTimeout(() => {
+                        if (onMarkerDelete) {
+                          onMarkerDelete(idx);
+                        }
+                      }, 50);
+                    }}
+                    style={{
+                      backgroundColor: '#ff4444',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      padding: '6px 12px',
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      marginTop: '8px'
+                    }}
+                    title="Delete this point"
+                  >
+                    🗑️ Delete Point
+                  </button>
                 </div>
               </Popup>
             </Marker>

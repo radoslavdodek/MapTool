@@ -268,6 +268,19 @@ function App() {
     const updatedText = formatCoordinatesToText(updatedCoordinates, isLatLngOrder);
     setInputText(updatedText);
   };
+
+  // Handle marker delete events
+  const handleMarkerDelete = (index) => {
+    // Remove the coordinate at the specified index
+    const updatedCoordinates = coordinates.filter((_, i) => i !== index);
+    
+    // Update the coordinates state
+    setCoordinates(updatedCoordinates);
+    
+    // Update the textarea with the new coordinates
+    const updatedText = formatCoordinatesToText(updatedCoordinates, isLatLngOrder);
+    setInputText(updatedText);
+  };
   
   // Copy current URL to clipboard
   const copyToClipboard = () => {
@@ -561,6 +574,7 @@ function App() {
           onMapChange={handleMapChange}
           onMapClick={handleMapClick}
           onMarkerDrag={handleMarkerDrag}
+          onMarkerDelete={handleMarkerDelete}
           measureEnabled={measureEnabled}
           isFullscreenInitial={isFullscreen}
           onFullscreenChange={handleFullscreenChange}
