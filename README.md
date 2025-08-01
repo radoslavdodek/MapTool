@@ -2,48 +2,17 @@
 
 ![MapTool preview](pictures/app-preview.jpg)
 
-Completely vibe-coded React app that allows users to visualize geographic coordinates on a map. Users can input latitude and longitude coordinates in a text area, and the application will display these points as markers on an interactive map.
+MapTool is vibe-coded React app for visualizing geographic coordinates on an interactive map. Input latitude and longitude pairs, and see them as markers with optional labels and colors.
 
-## Quick Start
+- Live parsing and validation
+- Multiple map styles
+- Shareable URLs
 
-The application is located in the `maptool` directory. To get started:
-
+**Quick Start:**
 ```bash
 cd maptool
 npm install
 npm start
 ```
 
-Then open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## Building and Deployment
-
-To build the application for production:
-
-```bash
-cd maptool
-npm run build
-```
-
-This creates an optimized production build in the `build` folder that can be deployed to various hosting platforms.
-
-### Deploying to a Subfolder
-
-If you want to deploy the application to a specific subfolder on your server (e.g., https://example.com/maptool/), you need to configure the `homepage` field in package.json. See the [Custom Server Subfolder Deployment](maptool/README.md#custom-server-subfolder-deployment) section in the maptool README for detailed instructions.
-
-For other deployment options (GitHub Pages, Netlify, Vercel, AWS), see the [Building and Deployment](maptool/README.md#building-and-deployment) section in the maptool README.
-
-## Features
-
-- Input latitude and longitude coordinates in a text area
-- Support for multiple coordinate formats (comma-separated or space-separated)
-- Optional labels for points (in quotes after coordinates, e.g., `41.849834 -87.880674 "Community Park in Westchester"`)
-- Optional color specification for points (after the label, e.g., `41.849834 -87.880674 "Park" red` or `41.849834 -87.880674 #00FF00`)
-- Reliable label display that works well at all zoom levels
-- Real-time parsing and validation of coordinates
-- Interactive map display using Leaflet
-- Multiple map styles to choose from (OpenStreetMap, OpenTopoMap, Stamen Terrain, etc.)
-- URL sharing functionality - all map state is encoded in the URL for easy sharing
-- Responsive design with the map taking up most of the screen space
-
-For more detailed information, please see the [README.md](maptool/README.md) in the maptool directory.
+For full usage instructions, features, and deployment guides, see [maptool/README.md](maptool/README.md).

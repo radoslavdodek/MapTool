@@ -1,6 +1,6 @@
 # MapTool
 
-A simple React application that allows users to visualize geographic coordinates on a map. Users can input latitude and longitude coordinates in a text area, and the application will display these points as markers on an interactive map.
+Vibe-coded React application to visualize geographic coordinates on a map. Input coordinates, labels, and colors in a flexible format and share interactive maps via URL.
 
 ## Features
 
