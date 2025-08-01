@@ -326,8 +326,8 @@ function App() {
           setMapZoom(state.zoom);
           setUrlZoom(state.zoom);
         } else {
-          // Default to zoom level 4 for continental US view if no zoom is specified
-          setMapZoom(4);
+          // Default to zoom level 5 for continental US view if no zoom is specified
+          setMapZoom(5);
         }
         
         // Set measure tool state if specified in URL
