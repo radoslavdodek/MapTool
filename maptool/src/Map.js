@@ -328,7 +328,7 @@ const FullscreenButton = ({ isFullscreen, onClick }) => {
   );
 };
 
-function MapComponent({ coordinates, mapType = 'openstreetmap', center, zoom, onMapChange, onMapClick, measureEnabled = false, isFullscreenInitial = false, onFullscreenChange }) {
+function MapComponent({ coordinates, mapType = 'openstreetmap', center, zoom, onMapChange, onMapClick, measureEnabled = false, isFullscreenInitial = false, onFullscreenChange, onMarkerDrag }) {
   // State for fullscreen mode
   const [isFullscreen, setIsFullscreen] = useState(isFullscreenInitial);
   // State for showing the fullscreen arrow tooltip
@@ -472,22 +472,46 @@ function MapComponent({ coordinates, mapType = 'openstreetmap', center, zoom, on
               key={idx} 
               position={position} 
               icon={icon}
+              draggable={true}
+              eventHandlers={{
+                dragstart: (e) => {
+                  // Add visual feedback during drag
+                  e.target.getElement().classList.add('dragging');
+                },
+                dragend: (e) => {
+                  // Remove visual feedback after drag
+                  e.target.getElement().classList.remove('dragging');
+                  
+                  if (onMarkerDrag) {
+                    const newLat = e.target.getLatLng().lat;
+                    const newLng = e.target.getLatLng().lng;
+                    onMarkerDrag(idx, newLat, newLng);
+                  }
+                }
+              }}
             >
               <Popup>
-                Latitude: {position[0]}<br />
-                Longitude: {position[1]}
-                {label && (
-                  <>
-                    <br />
-                    Label: {label}
-                  </>
-                )}
-                {color && (
-                  <>
-                    <br />
-                    Color: {color}
-                  </>
-                )}
+                <div style={{ textAlign: 'center' }}>
+                  <strong>Point {idx + 1}</strong><br />
+                  Latitude: {position[0].toFixed(6)}<br />
+                  Longitude: {position[1].toFixed(6)}
+                  {label && (
+                    <>
+                      <br />
+                      <strong>Label:</strong> {label}
+                    </>
+                  )}
+                  {color && (
+                    <>
+                      <br />
+                      <strong>Color:</strong> {color}
+                    </>
+                  )}
+                  <br />
+                  <small style={{ color: '#666', display: 'block', marginTop: '8px' }}>
+                    💡 Drag to move this point
+                  </small>
+                </div>
               </Popup>
             </Marker>
           );

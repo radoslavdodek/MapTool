@@ -250,6 +250,24 @@ function App() {
         setIsLoadingPlace(false);
       });
   };
+
+  // Handle marker drag events
+  const handleMarkerDrag = (index, newLat, newLng) => {
+    // Update the coordinates array with the new position
+    const updatedCoordinates = [...coordinates];
+    updatedCoordinates[index] = {
+      ...updatedCoordinates[index],
+      lat: parseFloat(newLat.toFixed(6)),
+      lng: parseFloat(newLng.toFixed(6))
+    };
+    
+    // Update the coordinates state
+    setCoordinates(updatedCoordinates);
+    
+    // Update the textarea with the new coordinates
+    const updatedText = formatCoordinatesToText(updatedCoordinates, isLatLngOrder);
+    setInputText(updatedText);
+  };
   
   // Copy current URL to clipboard
   const copyToClipboard = () => {
@@ -539,6 +557,7 @@ function App() {
           zoom={mapZoom}
           onMapChange={handleMapChange}
           onMapClick={handleMapClick}
+          onMarkerDrag={handleMarkerDrag}
           measureEnabled={measureEnabled}
           isFullscreenInitial={isFullscreen}
           onFullscreenChange={handleFullscreenChange}

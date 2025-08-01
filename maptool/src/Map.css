@@ -46,6 +46,53 @@
   cursor: crosshair;
 }
 
+/* Draggable marker styles */
+.leaflet-marker-draggable {
+  cursor: grab;
+}
+
+.leaflet-marker-draggable:active {
+  cursor: grabbing;
+}
+
+/* Drag indicator styles */
+.drag-indicator {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid #666;
+  border-radius: 2px;
+  color: #333;
+  font-size: 8px;
+  font-weight: bold;
+  padding: 1px 2px;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 1001;
+  transform: rotate(90deg);
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.custom-div-icon:hover .drag-indicator {
+  opacity: 1;
+}
+
+/* Dragging state styles */
+.custom-div-icon.dragging {
+  opacity: 0.7;
+  transform: scale(1.1);
+  transition: all 0.1s ease;
+}
+
+.custom-div-icon.dragging .drag-indicator {
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 1);
+  border-color: #0078FF;
+  color: #0078FF;
+}
+
 /* Custom marker label styles */
 .custom-marker-label {
   background-color: rgba(255, 255, 255, 0.8);
