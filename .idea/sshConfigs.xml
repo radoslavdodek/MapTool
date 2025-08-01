@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="SshConfigs">
-    <configs>
-      <sshConfig connectionConfig="{&quot;serverAliveInterval&quot;:300}" host="130.61.138.117" id="8a3a7d28-1a5a-4c9c-a34e-3f2bb64bacf6" keyPath="$USER_HOME$/.ssh/oracle-cloud.key" port="22" nameFormat="DESCRIPTIVE" username="ubuntu" useOpenSSHConfig="true" />
-    </configs>
-  </component>
-</project>

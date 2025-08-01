@@ -8,7 +8,7 @@ MapTool is a vibe-coded React app for visualizing geographic coordinates on an i
 - Multiple map styles
 - Shareable URLs
 
-**Quick Start:**
+## Quick Start
 ```bash
 cd maptool
 npm install
@@ -17,6 +17,6 @@ npm start
 
 For full usage instructions, features, and deployment guides, see [maptool/README.md](maptool/README.md).
 
-**Demo:**
+## Demo
 
 Try it out here: [MapTool](https://indek.eu/maptool)
