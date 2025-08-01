@@ -2,7 +2,7 @@
 
 ![MapTool preview](pictures/app-preview.jpg)
 
-MapTool is vibe-coded React app for visualizing geographic coordinates on an interactive map. Input latitude and longitude pairs, and see them as markers with optional labels and colors.
+MapTool is a vibe-coded React app for visualizing geographic coordinates on an interactive map. Input latitude and longitude pairs, and see them as markers with optional labels and colors.
 
 - Live parsing and validation
 - Multiple map styles
