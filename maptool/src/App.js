@@ -196,8 +196,10 @@ function App() {
         // Log the closest place name to the console
         console.log("Closest place:", placeName);
 
-        // Format the new coordinate with 6 decimal places
-        const newCoord = `${lat.toFixed(6)}, ${lng.toFixed(6)} "${placeName}" blue`;
+        // Format the new coordinate with 6 decimal places, respecting the coordinate order setting
+        const first = isLatLngOrder ? lat.toFixed(6) : lng.toFixed(6);
+        const second = isLatLngOrder ? lng.toFixed(6) : lat.toFixed(6);
+        const newCoord = `${first}, ${second} "${placeName}" blue`;
 
         // Add the new coordinate to the text area
         setInputText(prevText => {
@@ -222,8 +224,10 @@ function App() {
       .catch(error => {
         console.error("Error fetching place name:", error);
 
-        // Format the new coordinate with 6 decimal places
-        const newCoord = `${lat.toFixed(6)}, ${lng.toFixed(6)} "" blue`;
+        // Format the new coordinate with 6 decimal places, respecting the coordinate order setting
+        const first = isLatLngOrder ? lat.toFixed(6) : lng.toFixed(6);
+        const second = isLatLngOrder ? lng.toFixed(6) : lat.toFixed(6);
+        const newCoord = `${first}, ${second} "" blue`;
 
         // Add the new coordinate to the text area
         setInputText(prevText => {
