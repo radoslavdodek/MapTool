@@ -16,3 +16,7 @@ npm start
 ```
 
 For full usage instructions, features, and deployment guides, see [maptool/README.md](maptool/README.md).
+
+**Demo:**
+
+Try it out here: [MapTool](https://indek.eu/maptool)
