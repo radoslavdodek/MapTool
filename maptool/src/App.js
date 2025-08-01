@@ -360,7 +360,7 @@ function App() {
     <div className="App">
       <div className="input-container">
         <textarea
-          placeholder="Enter coordinates (one pair per line, format: latitude, longitude) or click on the map to add a new coordinate"
+          placeholder={`Enter coordinates (one pair per line, format: ${isLatLngOrder ? 'latitude, longitude' : 'longitude, latitude'}) or click on the map to add a new coordinate`}
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           onPaste={(e) => {
