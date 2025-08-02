@@ -165,6 +165,15 @@ function App() {
             if (lng > maxLng) maxLng = lng;
         });
 
+        // Add padding (in degrees) to bounds
+        const latPadding = (maxLat - minLat) * 0.2 || 0.01; // 5% or minimum 0.01
+        const lngPadding = (maxLng - minLng) * 0.2 || 0.01;
+
+        minLat -= latPadding;
+        maxLat += latPadding;
+        minLng -= lngPadding;
+        maxLng += lngPadding;
+        
         // Center is the midpoint
         const center = [
             (minLat + maxLat) / 2,
