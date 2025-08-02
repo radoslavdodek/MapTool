@@ -166,7 +166,7 @@ function App() {
         });
 
         // Add padding (in degrees) to bounds
-        const latPadding = (maxLat - minLat) * 0.2 || 0.01; // 5% or minimum 0.01
+        const latPadding = (maxLat - minLat) * 0.2 || 0.01; 
         const lngPadding = (maxLng - minLng) * 0.2 || 0.01;
 
         minLat -= latPadding;
