@@ -275,9 +275,36 @@ function App() {
                 // Extract place name from the response
                 let placeName = "";
 
+                console.log(data);
+
                 if (data && data.address) {
-                    if (data.address.city) {
+                    // 1. Try state_code
+                    let stateCode = data.address.state_code || "";
+
+                    // 2. If not present, try ISO3166-2-lvl4 (e.g., "US-TN" => "TN")
+                    if (!stateCode && data.address["ISO3166-2-lvl4"]) {
+                        const iso = data.address["ISO3166-2-lvl4"];
+                        const match = iso.match(/^US-([A-Z]{2})$/i);
+                        if (match) {
+                            stateCode = match[1].toUpperCase();
+                        }
+                    }
+
+                    // 3. Compose label
+                    if (data.address.city && stateCode) {
+                        placeName = `${data.address.city}, ${stateCode}`;
+                    } else if (data.address.town && stateCode) {
+                        placeName = `${data.address.town}, ${stateCode}`;
+                    } else if (data.address.village && stateCode) {
+                        placeName = `${data.address.village}, ${stateCode}`;
+                    } else if (data.address.county && stateCode) {
+                        placeName = `${data.address.county}, ${stateCode}`;
+                    } else if (data.address.city) {
                         placeName = data.address.city;
+                    } else if (data.address.town) {
+                        placeName = data.address.town;
+                    } else if (data.address.village) {
+                        placeName = data.address.village;
                     } else if (data.address.county) {
                         placeName = data.address.county;
                     }
