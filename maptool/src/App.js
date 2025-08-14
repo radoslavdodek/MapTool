@@ -69,6 +69,9 @@ function App() {
     const [isLoadingPlace, setIsLoadingPlace] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [isLatLngOrder, setIsLatLngOrder] = useState(true); // true = lat,lng, false = lng,lat
+    const [showSearchDialog, setShowSearchDialog] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [isSearching, setIsSearching] = useState(false);
 
     // Get window size for responsive design
     const windowSize = useWindowSize();
@@ -251,6 +254,22 @@ function App() {
         isLatLngOrderRef.current = isLatLngOrder;
     }, [isLatLngOrder]);
 
+    // Handle escape key to close search dialog
+    useEffect(() => {
+        const handleEscKey = (event) => {
+            if (event.key === 'Escape' && showSearchDialog) {
+                setShowSearchDialog(false);
+                setSearchQuery('');
+            }
+        };
+
+        document.addEventListener('keydown', handleEscKey);
+        
+        return () => {
+            document.removeEventListener('keydown', handleEscKey);
+        };
+    }, [showSearchDialog]);
+
     // Handle map changes and update URL only (not map state)
     const handleMapChange = ({center, zoom}) => {
         // Only update URL-specific state variables, not the map view state
@@ -416,6 +435,107 @@ function App() {
             });
     };
 
+    // Search for a place and add it to the map
+    const handleSearchPlace = async () => {
+        if (!searchQuery.trim()) return;
+
+        setIsSearching(true);
+        try {
+            // First, use Nominatim search API to get coordinates
+            const searchResponse = await fetch(
+                `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=1`
+            );
+            const searchData = await searchResponse.json();
+
+            if (searchData && searchData.length > 0) {
+                const place = searchData[0];
+                const lat = parseFloat(place.lat);
+                const lng = parseFloat(place.lon);
+
+                // Now use the same reverse geocoding API as map clicks to get place name
+                const reverseResponse = await fetch(
+                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`
+                );
+                const reverseData = await reverseResponse.json();
+
+                // Extract place name using the same logic as map clicks
+                let placeName = "";
+
+                if (reverseData && reverseData.address) {
+                    // 1. Try state_code
+                    let stateCode = reverseData.address.state_code || "";
+
+                    // 2. If not present, try ISO3166-2-lvl4 (e.g., "US-TN" => "TN")
+                    if (!stateCode && reverseData.address["ISO3166-2-lvl4"]) {
+                        const iso = reverseData.address["ISO3166-2-lvl4"];
+                        const match = iso.match(/^US-([A-Z]{2})$/i);
+                        if (match) {
+                            stateCode = match[1].toUpperCase();
+                        }
+                    }
+
+                    // 3. Compose label
+                    if (reverseData.address.city && stateCode) {
+                        placeName = `${reverseData.address.city}, ${stateCode}`;
+                    } else if (reverseData.address.town && stateCode) {
+                        placeName = `${reverseData.address.town}, ${stateCode}`;
+                    } else if (reverseData.address.village && stateCode) {
+                        placeName = `${reverseData.address.village}, ${stateCode}`;
+                    } else if (reverseData.address.county && stateCode) {
+                        placeName = `${reverseData.address.county}, ${stateCode}`;
+                    } else if (reverseData.address.city) {
+                        placeName = reverseData.address.city;
+                    } else if (reverseData.address.town) {
+                        placeName = reverseData.address.town;
+                    } else if (reverseData.address.village) {
+                        placeName = reverseData.address.village;
+                    } else if (reverseData.address.county) {
+                        placeName = reverseData.address.county;
+                    }
+                }
+
+                // Format the new coordinate with 6 decimal places, respecting the coordinate order setting
+                const first = isLatLngOrder ? lat.toFixed(6) : lng.toFixed(6);
+                const second = isLatLngOrder ? lng.toFixed(6) : lat.toFixed(6);
+                const newCoord = `${first}, ${second} "${placeName}" yellow`;
+
+                // Add the new coordinate to the text area
+                setInputText(prevText => {
+                    // If there's already text, add a new line
+                    const updatedText = prevText.trim() ? `${prevText}\n${newCoord}` : newCoord;
+
+                    // Also directly update the coordinates state to ensure URL gets updated
+                    const newCoordinates = [...coordinates, {
+                        lat: lat,
+                        lng: lng,
+                        label: placeName,
+                        color: "yellow"
+                    }];
+                    setCoordinates(newCoordinates);
+
+                    return updatedText;
+                });
+
+                // Center the map on the found location
+                setMapCenter([lat, lng]);
+                setMapZoom(12);
+                setUrlCenter([lat, lng]);
+                setUrlZoom(12);
+
+                // Close the search dialog
+                setShowSearchDialog(false);
+                setSearchQuery('');
+            } else {
+                alert('Place not found. Please try a different search term.');
+            }
+        } catch (error) {
+            console.error('Error searching for place:', error);
+            alert('Error searching for place. Please try again.');
+        } finally {
+            setIsSearching(false);
+        }
+    };
+
     // Update URL when state changes
     useEffect(() => {
         // Only update URL if we have all necessary state
@@ -507,67 +627,76 @@ function App() {
     return (
         <div className="App">
             <div className="input-container">
-        <textarea
-            placeholder={`Enter coordinates (one pair per line, format: ${isLatLngOrder ? 'latitude, longitude' : 'longitude, latitude'}) or click on the map to add a new coordinate`}
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            onPaste={(e) => {
-                const pastedText = e.clipboardData.getData('text');
-                // Check if the pasted text looks like a URL with a hash
-                if (pastedText.includes('http') && pastedText.includes('#')) {
-                    e.preventDefault(); // Prevent default paste behavior
+        <div className="textarea-search-container">
+            <textarea
+                placeholder={`Enter coordinates (one pair per line, format: ${isLatLngOrder ? 'latitude, longitude' : 'longitude, latitude'}) or click on the map to add a new coordinate`}
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                onPaste={(e) => {
+                    const pastedText = e.clipboardData.getData('text');
+                    // Check if the pasted text looks like a URL with a hash
+                    if (pastedText.includes('http') && pastedText.includes('#')) {
+                        e.preventDefault(); // Prevent default paste behavior
 
-                    // Extract the hash part from the URL
-                    const hashMatch = pastedText.match(/#[^#\s]+$/);
-                    if (hashMatch) {
-                        const hash = hashMatch[0];
-                        const state = decodeHashToState(hash);
+                        // Extract the hash part from the URL
+                        const hashMatch = pastedText.match(/#[^#\s]+$/);
+                        if (hashMatch) {
+                            const hash = hashMatch[0];
+                            const state = decodeHashToState(hash);
 
-                        if (state) {
-                            // Get the coordinate order from URL or use current setting
-                            const coordinateOrder = state.isLatLngOrder !== undefined ? state.isLatLngOrder : isLatLngOrderRef.current;
+                            if (state) {
+                                // Get the coordinate order from URL or use current setting
+                                const coordinateOrder = state.isLatLngOrder !== undefined ? state.isLatLngOrder : isLatLngOrderRef.current;
 
-                            // Update state based on the decoded information
-                            if (state.coordinates) {
-                                // Convert coordinates to string for textarea using the coordinate order from URL or current setting
-                                const coordsText = formatCoordinatesToText(state.coordinates, coordinateOrder);
-                                setInputText(coordsText);
-                            }
+                                // Update state based on the decoded information
+                                if (state.coordinates) {
+                                    // Convert coordinates to string for textarea using the coordinate order from URL or current setting
+                                    const coordsText = formatCoordinatesToText(state.coordinates, coordinateOrder);
+                                    setInputText(coordsText);
+                                }
 
-                            // Set coordinate order after setting input text to avoid triggering useEffect
-                            if (state.isLatLngOrder !== undefined) {
-                                setIsLatLngOrder(state.isLatLngOrder);
-                            }
+                                // Set coordinate order after setting input text to avoid triggering useEffect
+                                if (state.isLatLngOrder !== undefined) {
+                                    setIsLatLngOrder(state.isLatLngOrder);
+                                }
 
-                            if (state.mapType) {
-                                setMapType(state.mapType);
-                            }
+                                if (state.mapType) {
+                                    setMapType(state.mapType);
+                                }
 
-                            if (state.center) {
-                                setMapCenter(state.center);
-                                setUrlCenter(state.center);
-                            }
+                                if (state.center) {
+                                    setMapCenter(state.center);
+                                    setUrlCenter(state.center);
+                                }
 
-                            if (state.zoom) {
-                                setMapZoom(state.zoom);
-                                setUrlZoom(state.zoom);
-                            }
+                                if (state.zoom) {
+                                    setMapZoom(state.zoom);
+                                    setUrlZoom(state.zoom);
+                                }
 
-                            // Set measure tool state if specified in URL
-                            if (state.measureEnabled !== undefined) {
-                                setMeasureEnabled(state.measureEnabled);
-                            }
+                                // Set measure tool state if specified in URL
+                                if (state.measureEnabled !== undefined) {
+                                    setMeasureEnabled(state.measureEnabled);
+                                }
 
-                            // Set fullscreen state if specified in URL
-                            if (state.isFullscreen !== undefined) {
-                                setIsFullscreen(state.isFullscreen);
+                                // Set fullscreen state if specified in URL
+                                if (state.isFullscreen !== undefined) {
+                                    setIsFullscreen(state.isFullscreen);
+                                }
                             }
                         }
                     }
-                }
-            }}
-            rows={windowSize.width <= 480 ? 3 : windowSize.width <= 768 ? 4 : 5}
-        />
+                }}
+                rows={windowSize.width <= 480 ? 3 : windowSize.width <= 768 ? 4 : 5}
+            />
+            <button
+                className="search-button"
+                title="Search for a place and add it to the map"
+                onClick={() => setShowSearchDialog(true)}
+            >
+                🔍
+            </button>
+        </div>
                 <div className="controls-container">
                     <div className="coordinates-info">
                         {coordinates.length > 0 ? (
@@ -703,6 +832,45 @@ function App() {
                     </div>
                 </div>
             </div>
+            
+            {/* Search Dialog */}
+            {showSearchDialog && (
+                <div className="search-dialog">
+                    <div className="search-dialog-content">
+                        <h3>Search for a Place</h3>
+                        <p>Enter the name of a place to find and add it to the map (in yellow color):</p>
+                        <div className="search-input-container">
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="e.g., New York, London, Tokyo..."
+                                onKeyPress={(e) => {
+                                    if (e.key === 'Enter') {
+                                        handleSearchPlace();
+                                    }
+                                }}
+                                autoFocus
+                            />
+                            <button 
+                                onClick={handleSearchPlace}
+                                disabled={isSearching || !searchQuery.trim()}
+                            >
+                                {isSearching ? 'Searching...' : 'Search'}
+                            </button>
+                        </div>
+                        <div className="search-dialog-buttons">
+                            <button onClick={() => {
+                                setShowSearchDialog(false);
+                                setSearchQuery('');
+                            }}>
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            
             <div className="map-wrapper">
                 {isLoadingPlace && (
                     <div className="loading-indicator">
